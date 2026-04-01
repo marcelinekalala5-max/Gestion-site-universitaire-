@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus URKIM - Gestion des Étudiants </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-main: #f0f4fe;
+            --bg-soft: #e9f0ff;
+            --card: rgba(255, 255, 255, 0.96);
+            --card-border: rgba(79, 114, 205, 0.15);
+            --text-main: #0a1e3c;
+            --text-soft: #4a5b7a;
+            --primary: #4f72cd;
+            --primary-dark: #3a5bb5;
+            --primary-light: #eef3ff;
+            --success: #2dcc9f;
+            --success-dark: #25b088;
+            --warning: #f6b83e;
+            --warning-dark: #e5a52a;
+            --danger: #ff6b6b;
+            --danger-dark: #ee5a5a;
+            --info: #5b8cdf;
+            --info-dark: #4a7bce;
+            --radius: 24px;
+            --radius-sm: 16px;
+            --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 20px 40px -12px rgba(37, 99, 235, 0.2);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #2dcc9f 0%, #25b088 100%);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f5f9ff 0%, #eef2fa 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Décorations de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -20%;
+            width: 80%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(79, 114, 205, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            right: -10%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(118, 75, 162, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Animation de particules légères */
+        .particle {
+            position: fixed;
+            background: rgba(79, 114, 205, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* Navbar Premium */
+        .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(79, 114, 205, 0.1);
+            padding: 16px 32px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(79, 114, 205, 0.3);
+        }
+
+        .logo-icon i {
+            font-size: 1.3rem;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e2b4f 0%, #2d3e6e 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: rgba(79, 114, 205, 0.1);
+            border-color: rgba(79, 114, 205, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 114, 205, 0.3);
+        }
+
+        .logout-btn {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--danger);
+            border-color: rgba(255, 107, 107, 0.2);
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* Container principal */
+        .main-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 24px;
+        }
+
+        /* Cartes modernes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Formulaire amélioré */
+        .form-container {
+            padding: 36px 40px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-badge {
+            display: inline-block;
+            background: var(--gradient-primary);
+            padding: 6px 16px;
+            border-radius: 40px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(79, 114, 205, 0.3);
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+        }
+
+        /* Grille du formulaire */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .input-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-label i {
+            color: var(--primary);
+            font-size: 0.9rem;
+            width: 20px;
+        }
+
+        .required-star {
+            color: var(--danger);
+            font-size: 0.7rem;
+        }
+
+        .input-field {
+            position: relative;
+        }
+
+        .input-field input,
+        .input-field select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e8ecf2;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+            color: var(--text-main);
+        }
+
+        .input-field input:focus,
+        .input-field select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 114, 205, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-field input:hover,
+        .input-field select:hover {
+            border-color: var(--primary);
+        }
+
+        /* Boutons d'action stylisés */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+            justify-content: center;
+        }
+
+        .btn-modern {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: inherit;
+        }
+
+        .btn-modern i {
+            font-size: 1rem;
+        }
+
+        .btn-primary-modern {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 114, 205, 0.3);
+        }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 114, 205, 0.4);
+        }
+
+        .btn-success-modern {
+            background: var(--gradient-success);
+            color: white;
+            box-shadow: 0 4px 15px rgba(45, 204, 159, 0.3);
+        }
+
+        .btn-success-modern:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(45, 204, 159, 0.4);
+        }
+
+        .btn-warning-modern {
+            background: linear-gradient(135deg, #f6b83e 0%, #e5a52a 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(246, 184, 62, 0.3);
+        }
+
+        .btn-warning-modern:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-danger-modern {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-danger-modern:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-info-modern {
+            background: linear-gradient(135deg, #5b8cdf 0%, #4a7bce 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(91, 140, 223, 0.3);
+        }
+
+        .btn-info-modern:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-light-modern {
+            background: #f8fafc;
+            color: var(--text-main);
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-light-modern:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        /* Zone de recherche améliorée */
+        .search-section {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px dashed rgba(79, 114, 205, 0.2);
+        }
+
+        .search-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .search-wrapper {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-wrapper input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #e8ecf2;
+            border-radius: 60px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 114, 205, 0.1);
+        }
+
+        /* Résultats de recherche */
+        .results-container {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: var(--radius-sm);
+        }
+
+        .result-item {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            border: 1px solid #eef2ff;
+            transition: all 0.2s ease;
+        }
+
+        .result-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateX(4px);
+        }
+
+        .result-info {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-matricule {
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .result-name {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .result-promo {
+            background: #fef3e2;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--warning-dark);
+        }
+
+        .result-actions i {
+            margin: 0 6px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .result-actions i:hover {
+            transform: scale(1.15);
+        }
+
+        /* Alertes */
+        .alert-modern {
+            padding: 14px 20px;
+            border-radius: 60px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #e8faf5;
+            color: var(--success-dark);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-error {
+            background: #fff5f5;
+            color: var(--danger-dark);
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Mode édition */
+        .edit-mode-badge {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-container { padding: 24px; }
+            .form-grid { grid-template-columns: 1fr; gap: 16px; }
+            .action-buttons { justify-content: center; }
+            .btn-modern { padding: 12px 20px; font-size: 0.85rem; }
+            .form-header h2 { font-size: 1.5rem; }
+            .navbar { padding: 12px 20px; }
+            .main-container { padding: 0 16px; margin: 20px auto; }
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+    // ======================= STORAGE =======================
+    const STUDENTS_KEY = "campusnova_etudiants_v3";
+
+    function getEtudiants() {
+        const data = localStorage.getItem(STUDENTS_KEY);
+        if (data) return JSON.parse(data);
+        const defaultStudents = [
+            { id: "1", matricule: "ET2024001", nom: "Kabobo", prenom: "marceline", email: "marceline@email.com", filiere: "Génie Logiciel", promotion: "L3" },
+            { id: "2", matricule: "ET2024002", nom: "Dadu", prenom: "Myriam", email: "myriam@email.com", filiere: "Data Science", promotion: "M1" },
+            { id: "3", matricule: "ET2024003", nom: "Koko", prenom: "Aline", email: "aline@email.com", filiere: "Cybersécurité", promotion: "M2" },
+            { id: "4", matricule: "ET2024004", nom: "Mbala", prenom: "Christian", email: "christian@email.com", filiere: "Génie Logiciel", promotion: "L1" }
+        ];
+        localStorage.setItem(STUDENTS_KEY, JSON.stringify(defaultStudents));
+        return defaultStudents;
+    }
+
+    function saveEtudiants(students) {
+        localStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
+    }
+
+    let currentUser = localStorage.getItem("auth_user") || null;
+    let editModeId = null;
+    let currentSection = "home";
+
+    // ======================= RENDER =======================
+    function renderApp() {
+        const app = document.getElementById("app");
+        if (!currentUser) {
+            app.innerHTML = renderAuthPage();
+            attachAuthEvents();
+        } else {
+            app.innerHTML = renderMainLayout();
+            attachMainEvents();
+            renderSection(currentSection);
+        }
+    }
+
+    function renderAuthPage() {
+        return `
+            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+                <div class="glass-card" style="max-width: 480px; width: 100%; padding: 40px;">
+                    <div style="text-align: center; margin-bottom: 32px;">
+                        <div class="logo-icon" style="margin: 0 auto 16px; width: 60px; height: 60px;">
+                            <i class="fas fa-graduation-cap" style="font-size: 1.8rem;"></i>
+                        </div>
+                        <h2 style="font-size: 1.8rem; margin-bottom: 8px;">Bienvenue</h2>
+                        <p style="color: var(--text-soft);">Connectez-vous à votre espace</p>
+                    </div>
+                    <div id="authMessage"></div>
+                    <div class="input-group" style="margin-bottom: 20px;">
+                        <label class="input-label"><i class="fas fa-user"></i> Identifiant</label>
+                        <div class="input-field"><input type="text" id="loginUsername" placeholder="professeur" value="admin"></div>
+                    </div>
+                    <div class="input-group" style="margin-bottom: 24px;">
+                        <label class="input-label"><i class="fas fa-key"></i> Mot de passe</label>
+                        <div class="input-field"><input type="password" id="loginPassword" placeholder="••••" value="1234"></div>
+                    </div>
+                    <button id="loginBtn" class="btn-modern btn-primary-modern" style="width: 100%; justify-content: center;"><i class="fas fa-sign-in-alt"></i> Se connecter</button>
+                    <p style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-soft);"> Démo: admin / 1234</p>
+                </div>
+            </div>
+        `;
+    }
+
+    function attachAuthEvents() {
+        const loginBtn = document.getElementById("loginBtn");
+        if (loginBtn) {
+            loginBtn.addEventListener("click", () => {
+                const user = document.getElementById("loginUsername").value.trim();
+                const pwd = document.getElementById("loginPassword").value.trim();
+                if (user === "admin" && pwd === "1234") {
+                    currentUser = "admin";
+                    localStorage.setItem("auth_user", "admin");
+                    renderApp();
+                } else {
+                    const msgDiv = document.getElementById("authMessage");
+                    msgDiv.innerHTML = "<div class='alert-modern alert-error'><i class='fas fa-exclamation-circle'></i> Identifiants incorrects (prof/1234)</div>";
+                }
+            });
+        }
+    }
+
+    function renderMainLayout() {
+        return `
+            <nav class="navbar">
+                <div class="nav-container">
+                    <div class="logo">
+                        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <span class="logo-text">Campus URKIM</span>
+                    </div>
+                    <div class="nav-links">
+                        <button class="nav-link" data-section="home"><i class="fas fa-home"></i> Accueil</button>
+                        <button class="nav-link" data-section="register"><i class="fas fa-user-plus"></i> Inscription</button>
+                        <button class="nav-link" data-section="listing"><i class="fas fa-list"></i> Listing</button>
+                        <button class="nav-link logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+                    </div>
+                </div>
+            </nav>
+            <div class="main-container" id="dynamicSection"></div>
+        `;
+    }
+
+    function attachMainEvents() {
+        document.querySelectorAll("[data-section]").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const section = btn.getAttribute("data-section");
+                currentSection = section;
+                renderSection(section);
+            });
+        });
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                currentUser = null;
+                localStorage.removeItem("auth_user");
+                renderApp();
+            });
+        }
+        renderSection("home");
+    }
+
+    function renderSection(section) {
+        const container = document.getElementById("dynamicSection");
+        if (!container) return;
+        if (section === "home") container.innerHTML = renderHomePage();
+        else if (section === "register") container.innerHTML = renderRegisterPageEnhanced();
+        else if (section === "listing") container.innerHTML = renderListingPage();
+        
+        if (section === "register") attachRegisterEventsEnhanced();
+        if (section === "listing") attachListingEvents();
+        if (section === "home") attachHomeEvents();
+    }
+
+    function renderHomePage() {
+        const students = getEtudiants();
+        return `
+            <div class="glass-card" style="padding: 40px;">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <div class="form-badge" style="display: inline-block;">Tableau de bord</div>
+                    <h2 style="font-size: 2.2rem;">Bienvenue, Professeur</h2>
+                    <p style="color: var(--text-soft);">Gérez efficacement les inscriptions des étudiants</p>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="glass-card" style="padding: 24px; text-align: center;"><i class="fas fa-users" style="font-size: 2.5rem; color: var(--primary);"></i><h3 style="margin-top: 12px;">${students.length}</h3><p>Étudiants inscrits</p></div>
+                    <div class="glass-card" style="padding: 24px; text-align: center;"><i class="fas fa-chart-line" style="font-size: 2.5rem; color: var(--success);"></i><h3 style="margin-top: 12px;">6 Promotions</h3><p>L1 → M2</p></div>
+                    <div class="glass-card" style="padding: 24px; text-align: center;"><i class="fas fa-calendar-check" style="font-size: 2.5rem; color: var(--warning);"></i><h3 style="margin-top: 12px;">2024-2025</h3><p>Année académique</p></div>
+                </div>
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <button id="homeToRegister" class="btn-modern btn-success-modern"><i class="fas fa-plus-circle"></i> Nouvelle inscription</button>
+                    <button id="homeToListing" class="btn-modern btn-info-modern"><i class="fas fa-table-list"></i> Voir la liste</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function attachHomeEvents() {
+        const toReg = document.getElementById("homeToRegister");
+        const toList = document.getElementById("homeToListing");
+        if (toReg) toReg.addEventListener("click", () => { currentSection = "register"; renderSection("register"); });
+        if (toList) toList.addEventListener("click", () => { currentSection = "listing"; renderSection("listing"); });
+    }
+
+    // ======================= FORMULAIRE AMÉLIORÉ =======================
+    function renderRegisterPageEnhanced() {
+        return `
+            <div class="glass-card form-container">
+                <div class="form-header">
+                    <span class="form-badge"><i class="fas fa-edit"></i> Formulaire d'inscription</span>
+                    <h2>Enregistrer un nouvel étudiant</h2>
+                    <p>Remplissez les informations ci-dessous pour ajouter un étudiant à la base de données</p>
+                </div>
+                <div id="regAlert"></div>
+                <div id="editModeIndicator" style="display: none;" class="edit-mode-badge"><i class="fas fa-pen"></i> Mode édition - Modifiez les informations et cliquez sur Enregistrer</div>
+                
+                <div class="form-grid">
+                    <div class="input-group"><label class="input-label"><i class="fas fa-id-card"></i> Matricule <span class="required-star">*</span></label><div class="input-field"><input type="text" id="matricule" placeholder="Ex: ET2025001"></div></div>
+                    <div class="input-group"><label class="input-label"><i class="fas fa-user"></i> Nom <span class="required-star">*</span></label><div class="input-field"><input type="text" id="nom" placeholder="Nom de famille"></div></div>
+                    <div class="input-group"><label class="input-label"><i class="fas fa-user-circle"></i> Prénom <span class="required-star">*</span></label><div class="input-field"><input type="text" id="prenom" placeholder="Prénom"></div></div>
+                    <div class="input-group"><label class="input-label"><i class="fas fa-envelope"></i> Email</label><div class="input-field"><input type="email" id="email" placeholder="etudiant@email.com"></div></div>
+                    <div class="input-group"><label class="input-label"><i class="fas fa-book"></i> Filière</label><div class="input-field"><input type="text" id="filiere" placeholder="Ex: Génie Logiciel" value="Génie Logiciel"></div></div>
+                    <div class="input-group"><label class="input-label"><i class="fas fa-chart-simple"></i> Promotion</label><div class="input-field"><select id="promotion"><option value="L1">L1 - Licence 1</option><option value="L2">L2 - Licence 2</option><option value="L3">L3 - Licence 3</option><option value="L4">L4 - Licence 4</option><option value="M1">M1 - Master 1</option><option value="M2">M2 - Master 2</option></select></div></div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="btnEnregistrer" class="btn-modern btn-success-modern"><i class="fas fa-save"></i> Enregistrer</button>
+                    <button id="btnModifier" class="btn-modern btn-warning-modern"><i class="fas fa-edit"></i> Modifier</button>
+                    <button id="btnSupprimer" class="btn-modern btn-danger-modern"><i class="fas fa-trash-alt"></i> Supprimer</button>
+                    <button id="btnRechercher" class="btn-modern btn-info-modern"><i class="fas fa-search"></i> Rechercher</button>
+                    <button id="btnReset" class="btn-modern btn-light-modern"><i class="fas fa-undo-alt"></i> Réinitialiser</button>
+                </div>
+
+                <div class="search-section">
+                    <div class="search-title"><i class="fas fa-search" style="color: var(--primary);"></i> <span>Recherche rapide</span></div>
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="Rechercher par matricule, nom ou prénom...">
+                        <button id="quickSearchBtn" class="btn-modern btn-info-modern"><i class="fas fa-search"></i> Chercher</button>
+                    </div>
+                    <div class="results-container" id="searchResults"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    function attachRegisterEventsEnhanced() {
+        editModeId = null;
+        const editIndicator = document.getElementById("editModeIndicator");
+        
+        function showAlert(msg, isError = false) {
+            const alertDiv = document.getElementById("regAlert");
+            if (alertDiv) {
+                alertDiv.innerHTML = `<div class="alert-modern ${isError ? 'alert-error' : 'alert-success'}"><i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${msg}</div>`;
+                setTimeout(() => { if(alertDiv) alertDiv.innerHTML = ""; }, 3000);
+            }
+        }
+
+        function clearForm() {
+            document.getElementById("matricule").value = "";
+            document.getElementById("nom").value = "";
+            document.getElementById("prenom").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("filiere").value = "Génie Logiciel";
+            document.getElementById("promotion").value = "L1";
+            editModeId = null;
+            if (editIndicator) editIndicator.style.display = "none";
+        }
+
+        function performSearch(query) {
+            const resBox = document.getElementById("searchResults");
+            if (!query) { resBox.innerHTML = "<div style='padding: 20px; text-align: center; color: var(--text-soft);'><i class='fas fa-search'></i> Saisissez un terme de recherche</div>"; return; }
+            const students = getEtudiants();
+            const lower = query.toLowerCase();
+            const results = students.filter(s => s.matricule.toLowerCase().includes(lower) || s.nom.toLowerCase().includes(lower) || s.prenom.toLowerCase().includes(lower));
+            if (results.length === 0) { resBox.innerHTML = "<div class='alert-modern alert-error'>Aucun étudiant trouvé.</div>"; return; }
+            let html = "";
+            results.forEach(et => {
+                html += `<div class="result-item">
+                            <div class="result-info">
+                                <span class="result-matricule">${escapeHtml(et.matricule)}</span>
+                                <span class="result-name">${escapeHtml(et.nom)} ${escapeHtml(et.prenom)}</span>
+                                <span class="result-promo">${escapeHtml(et.promotion)}</span>
+                            </div>
+                            <div class="result-actions">
+                                <i class="fas fa-edit edit-result" data-id="${et.id}" data-mat="${escapeHtml(et.matricule)}" data-nom="${escapeHtml(et.nom)}" data-prenom="${escapeHtml(et.prenom)}" data-email="${escapeHtml(et.email || '')}" data-filiere="${escapeHtml(et.filiere)}" data-promo="${escapeHtml(et.promotion)}" style="color: var(--warning);"></i>
+                                <i class="fas fa-trash-alt delete-result" data-id="${et.id}" data-mat="${escapeHtml(et.matricule)}" style="color: var(--danger);"></i>
+                            </div>
+                         </div>`;
+            });
+            resBox.innerHTML = html;
+            
+            document.querySelectorAll(".edit-result").forEach(icon => {
+                icon.addEventListener("click", () => {
+                    document.getElementById("matricule").value = icon.getAttribute("data-mat");
+                    document.getElementById("nom").value = icon.getAttribute("data-nom");
+                    document.getElementById("prenom").value = icon.getAttribute("data-prenom");
+                    document.getElementById("email").value = icon.getAttribute("data-email");
+                    document.getElementById("filiere").value = icon.getAttribute("data-filiere");
+                    document.getElementById("promotion").value = icon.getAttribute("data-promo");
+                    editModeId = icon.getAttribute("data-id");
+                    if (editIndicator) editIndicator.style.display = "flex";
+                    showAlert(`Mode édition activé pour ${icon.getAttribute("data-mat")}`, false);
+                });
+            });
+            document.querySelectorAll(".delete-result").forEach(icon => {
+                icon.addEventListener("click", () => {
+                    if (confirm(`Supprimer définitivement ${icon.getAttribute("data-mat")} ?`)) {
+                        let students = getEtudiants();
+                        students = students.filter(s => s.id !== icon.getAttribute("data-id"));
+                        saveEtudiants(students);
+                        showAlert("Étudiant supprimé avec succès", false);
+                        performSearch(document.getElementById("searchInput").value);
+                        if (editModeId === icon.getAttribute("data-id")) clearForm();
+                    }
+                });
+            });
+        }
+
+        document.getElementById("btnEnregistrer")?.addEventListener("click", () => {
+            const matricule = document.getElementById("matricule").value.trim();
+            const nom = document.getElementById("nom").value.trim();
+            const prenom = document.getElementById("prenom").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const filiere = document.getElementById("filiere").value.trim();
+            const promotion = document.getElementById("promotion").value;
+            if (!matricule || !nom || !prenom) { showAlert("Matricule, Nom et Prénom sont obligatoires", true); return; }
+            let students = getEtudiants();
+            if (editModeId) {
+                const index = students.findIndex(s => s.id === editModeId);
+                if (index !== -1) {
+                    if (students[index].matricule !== matricule && students.some(s => s.matricule === matricule && s.id !== editModeId)) {
+                        showAlert("Ce matricule existe déjà", true); return;
+                    }
+                    students[index] = { id: editModeId, matricule, nom, prenom, email, filiere, promotion };
+                    saveEtudiants(students);
+                    showAlert(`Étudiant ${matricule} modifié avec succès !`);
+                    clearForm();
+                }
+            } else {
+                if (students.some(s => s.matricule === matricule)) { showAlert("Ce matricule existe déjà", true); return; }
+                students.push({ id: Date.now().toString(), matricule, nom, prenom, email, filiere, promotion });
+                saveEtudiants(students);
+                showAlert(`Étudiant ${matricule} enregistré avec succès !`);
+                clearForm();
+            }
+            document.getElementById("searchResults").innerHTML = "";
+        });
+
+        document.getElementById("btnModifier")?.addEventListener("click", () => {
+            const matricule = document.getElementById("matricule").value.trim();
+            if (!matricule) { showAlert("Saisissez le matricule de l'étudiant à modifier", true); return; }
+            const students = getEtudiants();
+            const found = students.find(s => s.matricule === matricule);
+            if (!found) { showAlert("Étudiant non trouvé", true); return; }
+            document.getElementById("nom").value = found.nom;
+            document.getElementById("prenom").value = found.prenom;
+            document.getElementById("email").value = found.email || "";
+            document.getElementById("filiere").value = found.filiere;
+            document.getElementById("promotion").value = found.promotion;
+            editModeId = found.id;
+            if (editIndicator) editIndicator.style.display = "flex";
+            showAlert(`Modification de ${matricule} activée`, false);
+        });
+
+        document.getElementById("btnSupprimer")?.addEventListener("click", () => {
+            const matricule = document.getElementById("matricule").value.trim();
+            if (!matricule) { showAlert("Entrez le matricule à supprimer", true); return; }
+            let students = getEtudiants();
+            const exists = students.find(s => s.matricule === matricule);
+            if (!exists) { showAlert("Matricule non trouvé", true); return; }
+            if (confirm(`Supprimer ${matricule} ?`)) {
+                students = students.filter(s => s.matricule !== matricule);
+                saveEtudiants(students);
+                showAlert(`Étudiant ${matricule} supprimé`);
+                clearForm();
+                document.getElementById("searchResults").innerHTML = "";
+            }
+        });
+
+        document.getElementById("btnRechercher")?.addEventListener("click", () => {
+            const query = document.getElementById("matricule").value.trim() || document.getElementById("nom").value.trim();
+            performSearch(query);
+        });
+
+        document.getElementById("quickSearchBtn")?.addEventListener("click", () => performSearch(document.getElementById("searchInput").value));
+        document.getElementById("searchInput")?.addEventListener("keypress", (e) => { if (e.key === "Enter") performSearch(e.target.value); });
+        document.getElementById("btnReset")?.addEventListener("click", () => { clearForm(); showAlert("Formulaire réinitialisé", false); });
+    }
+
+    function renderListingPage() {
+        const students = getEtudiants();
+        if (students.length === 0) return `<div class="glass-card" style="padding: 40px; text-align: center;"><h3>Aucun étudiant</h3><button id="emptyRegBtn" class="btn-modern btn-primary-modern" style="margin-top: 20px;">Inscrire</button></div>`;
+        let rows = "";
+        students.forEach(et => {
+            rows += `<tr><td>${escapeHtml(et.matricule)}</td><td>${escapeHtml(et.nom)}</td><td>${escapeHtml(et.prenom)}</td><td>${escapeHtml(et.email || '-')}</td><td>${escapeHtml(et.filiere)}</td><td><span class="result-promo">${escapeHtml(et.promotion)}</span></td><td class="action-icons"><i class="fas fa-edit edit-listing" data-id="${et.id}" data-mat="${escapeHtml(et.matricule)}" data-nom="${escapeHtml(et.nom)}" data-prenom="${escapeHtml(et.prenom)}" data-email="${escapeHtml(et.email || '')}" data-filiere="${escapeHtml(et.filiere)}" data-promo="${escapeHtml(et.promotion)}"></i><i class="fas fa-trash-alt delete-listing" data-id="${et.id}" data-mat="${escapeHtml(et.matricule)}"></i></td></tr>`;
+        });
+        return `<div class="glass-card" style="padding: 32px;"><h2 style="margin-bottom: 24px;"><i class="fas fa-users"></i> Liste des étudiants</h2><div class="table-wrap"><table style="width:100%;"><thead><tr><th>Matricule</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Filière</th><th>Promotion</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div><div style="margin-top: 24px; display: flex; gap: 12px;"><button id="refreshListing" class="btn-modern btn-info-modern"><i class="fas fa-sync"></i> Rafraîchir</button><button id="addFromListing" class="btn-modern btn-success-modern"><i class="fas fa-plus"></i> Nouvelle inscription</button></div></div>`;
+    }
+
+    function attachListingEvents() {
+        document.querySelectorAll(".delete-listing").forEach(icon => {
+            icon.addEventListener("click", () => { if(confirm(`Supprimer ${icon.getAttribute("data-mat")} ?`)){ let students = getEtudiants(); students = students.filter(s => s.id !== icon.getAttribute("data-id")); saveEtudiants(students); renderSection("listing"); } });
+        });
+        document.querySelectorAll(".edit-listing").forEach(icon => {
+            icon.addEventListener("click", () => {
+                const data = { id: icon.getAttribute("data-id"), matricule: icon.getAttribute("data-mat"), nom: icon.getAttribute("data-nom"), prenom: icon.getAttribute("data-prenom"), email: icon.getAttribute("data-email"), filiere: icon.getAttribute("data-filiere"), promotion: icon.getAttribute("data-promo") };
+                sessionStorage.setItem("editData", JSON.stringify(data));
+                currentSection = "register";
+                renderSection("register");
+                setTimeout(() => {
+                    const raw = sessionStorage.getItem("editData");
+                    if (raw && document.getElementById("matricule")) {
+                        const d = JSON.parse(raw);
+                        document.getElementById("matricule").value = d.matricule;
+                        document.getElementById("nom").value = d.nom;
+                        document.getElementById("prenom").value = d.prenom;
+                        document.getElementById("email").value = d.email;
+                        document.getElementById("filiere").value = d.filiere;
+                        document.getElementById("promotion").value = d.promotion;
+                        editModeId = d.id;
+                        const indicator = document.getElementById("editModeIndicator");
+                        if (indicator) indicator.style.display = "flex";
+                        sessionStorage.removeItem("editData");
+                    }
+                }, 100);
+            });
+        });
+        const refresh = document.getElementById("refreshListing");
+        if (refresh) refresh.addEventListener("click", () => renderSection("listing"));
+        const addBtn = document.getElementById("addFromListing");
+        if (addBtn) addBtn.addEventListener("click", () => { currentSection = "register"; renderSection("register"); });
+        const emptyBtn = document.getElementById("emptyRegBtn");
+        if (emptyBtn) emptyBtn.addEventListener("click", () => { currentSection = "register"; renderSection("register"); });
+    }
+
+    function escapeHtml(str) { if(!str) return ""; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+
+    renderApp();
+</script>
+</body>
+</html>
